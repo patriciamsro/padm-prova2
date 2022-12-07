@@ -1,13 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, View, Image} from 'react-native';
-import DatePicker from 'react-native-date-picker';
+// import DatePicker from 'react-native-date-picker';
 // import DateTimePicker from '@react-native-community/datetimepicker';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 
 export default App = () => {
   const [date, setDate] = useState(new Date());
-  const [open, setOpen] = useState(false);
   const [nasa, setNasa] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setDate(currentDate);
+  };
+
+  const showMode = (currentMode) => {
+    DateTimePickerAndroid.open({
+      value: date,
+      onChange,
+      mode: currentMode,
+      is24Hour: true,
+    });
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
 
   const api = () => {
     fetch(
@@ -25,11 +44,12 @@ export default App = () => {
         {!nasa ? (
           <>
             <Text style={styles.texto}>{date.toLocaleDateString('fr')}</Text>
-            <View style={styles.botao}/>
-            <Button title="Alterar data" onPress={() => setOpen(true)} />
-            <View style={styles.botao}/>
+            <View style={styles.espacamento}/>
+            <Button title="Alterar data" onPress={showDatepicker} />
+            <View style={styles.espacamento}/>
             <Button title="Buscar" onPress={() => api()} style={styles.btn}/>
-            <DatePicker
+            
+            {/* <DatePicker
               modal
               open={open}
               date={date}
@@ -40,12 +60,11 @@ export default App = () => {
               onCancel={() => {
                 setOpen(false)
               }}
-            />
+            /> */}
           </>
         ) : (
           <>
             <Button 
-              style={styles.botao}
               title="Buscar outra foto"
               onPress={() => setNasa(null)} 
               />
@@ -71,7 +90,7 @@ const styles = StyleSheet.create({
     padding: 200,
     flex: 1,
   },
-  botao: {
+  espacamento: {
     padding: 15,
   },
   texto : {
